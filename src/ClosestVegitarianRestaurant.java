@@ -45,12 +45,10 @@ public class ClosestVegitarianRestaurant {
             map.put(pair, distance);
         }
 
-        SortedSet<Map.Entry<Pair, Double>> sorted = entriesSortedByValues(map);
+        Map<Pair, Double> sorted = entriesSortedByValues(map);
 
-        Iterator<Map.Entry<Pair, Double>> it = sorted.iterator();
         List<List<Integer>> result = new ArrayList<>();
-        while(it.hasNext()) {
-            Map.Entry<Pair, Double> entry = it.next();
+        for (Map.Entry entry : sorted.entrySet()) {
             Pair p = entry.getKey();
             List<Integer> list = new ArrayList<>();
             list.add(p.getX());
@@ -63,16 +61,17 @@ public class ClosestVegitarianRestaurant {
 
         return result;
     }
+    
+    private static <K,V extends Comparable<? super V>> Map<K,V> entriesSortedByValues(Map<K, V> map) {
+        List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
+        list.sort(Map.Entry.comparingByValue());
 
-    private static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K, V> map) {
-        SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<>(
-                (e1, e2) -> {
-                    int res = e1.getValue().compareTo(e2.getValue());
-                    return res != 0 ? res : 1;
-                }
-        );
-        sortedEntries.addAll(map.entrySet());
-        return sortedEntries;
+        Map<K, V> result = new LinkedHashMap<>();
+        for (Map.Entry<K, V> entry : list) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+
+        return result;
     }
 
     private class Pair {
